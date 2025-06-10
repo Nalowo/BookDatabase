@@ -51,22 +51,21 @@ constexpr std::string GenreToString(Genre iG) {
 
 struct Book {
     // string_view для экономии памяти, чтобы ссылаться на оригинальную строку, хранящуюся в другом контейнере
-    std::string_view author;
     std::string title;
-
-    int year;
-    Genre genre;
+    std::string_view author;
+    
     double rating;
+    int year;
     int read_count;
+    Genre genre;
 
-    constexpr Book(const std::string &iTitle, std::string_view iAuthor, int iYear, Genre iGenre, double iRating,
-                   int iReadCount)
-        : author(iAuthor), title(iTitle), year(iYear), genre(iGenre), rating(iRating), read_count(iReadCount) {}
+    constexpr Book(const std::string &iTitle, std::string_view iAuthor,
+                   int iYear, Genre iGenre, double iRating, int iReadCount)
+        : title(iTitle), author(iAuthor),   rating(iRating), year(iYear), read_count(iReadCount), genre(iGenre) {}
 
-    constexpr Book(const std::string &iTitle, std::string_view iAuthor, int iYear, std::string_view iGenre,
-                   double iRating, int iReadCount)
-        : author(iAuthor), title(iTitle), year(iYear), genre(GenreFromString(iGenre)), rating(iRating),
-          read_count(iReadCount) {}
+    constexpr Book(const std::string &iTitle, std::string_view iAuthor,
+                   int iYear, std::string_view iGenre, double iRating, int iReadCount)
+        : Book(iTitle, iAuthor, iYear, GenreFromString(iGenre), iRating, iReadCount) {}
 
     auto operator<=>(const Book &rhv) const = default;
 };

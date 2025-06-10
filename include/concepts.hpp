@@ -37,6 +37,7 @@ concept BookContainerLike = requires(T cont) {
     { cont.cend() } -> std::same_as<typename T::const_iterator>;
     { cont.emplace_back(std::declval<typename T::value_type>()) } -> std::same_as<typename T::reference>;
     { cont.empty() } -> std::convertible_to<bool>;
+    { cont.size() } -> std::convertible_to<size_t>;
     cont.push_back(std::declval<typename T::value_type>());
 };
 }  // namespace bookdb
