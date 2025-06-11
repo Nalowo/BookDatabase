@@ -9,7 +9,10 @@ namespace bookdb {
 using ContainedType = bookdb::Book;
 
 template <typename T>
-concept BookIterator = std::bidirectional_iterator<T>;
+concept BookIterator = requires {
+    requires std::same_as<ContainedType, typename T::value_type>;
+    requires std::bidirectional_iterator<T>;
+};
 
 template <typename S, typename I>
 concept BookSentinel = std::sentinel_for<S, I>;
@@ -39,5 +42,11 @@ concept BookContainerLike = requires(T cont) {
     { cont.empty() } -> std::convertible_to<bool>;
     { cont.size() } -> std::convertible_to<size_t>;
     cont.push_back(std::declval<typename T::value_type>());
+};
+
+template<typename C>
+concept HasKeyAndMapped = requires {
+    typename C::key_container_type;
+    typename C::mapped_container_type;
 };
 }  // namespace bookdb

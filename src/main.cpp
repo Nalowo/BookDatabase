@@ -19,7 +19,8 @@ int main() {
 
     // Create a book database
     BookDatabase<std::vector<Book>> db;
-
+    auto r1 = buildAuthorHistogramFlat(db);
+    auto r2 = calculateGenreRatings(db.cbegin(), db.cend());
     /*
 
     Код закомментирован, чтобы не приводить к ошибке компиляции
