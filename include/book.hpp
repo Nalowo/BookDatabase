@@ -26,25 +26,24 @@ constexpr std::string GenreToString(Genre iG) {
     std::string res;
     switch (iG) {
     case Genre::Fiction:
-        res = "Fiction"sv;
+        res = "Fiction";
         break;
     case Genre::Mystery:
-        res = "Mystery"sv;
+        res = "Mystery";
         break;
     case Genre::NonFiction:
-        res = "NonFiction"sv;
+        res = "NonFiction";
         break;
     case Genre::SciFi:
         res = "SciFi"sv;
         break;
     case Genre::Biography:
-        res = "Biography"sv;
+        res = "Biography";
         break;
     case Genre::Unknown:
-        res = "Unknown"sv;
-        break;
     default:
-        throw std::logic_error{"Unknown bookdb::Genre"s};
+        res = "Unknown";
+        break;
     }
     return res;
 }
@@ -53,18 +52,18 @@ struct Book {
     // string_view для экономии памяти, чтобы ссылаться на оригинальную строку, хранящуюся в другом контейнере
     std::string title;
     std::string_view author;
-    
+
     double rating;
     int year;
     int read_count;
     Genre genre;
 
-    constexpr Book(const std::string &iTitle, std::string_view iAuthor,
-                   int iYear, Genre iGenre, double iRating, int iReadCount)
-        : title(iTitle), author(iAuthor),   rating(iRating), year(iYear), read_count(iReadCount), genre(iGenre) {}
+    constexpr Book(const std::string &iTitle, std::string_view iAuthor, int iYear, Genre iGenre, double iRating,
+                   int iReadCount)
+        : title(iTitle), author(iAuthor), rating(iRating), year(iYear), read_count(iReadCount), genre(iGenre) {}
 
-    constexpr Book(const std::string &iTitle, std::string_view iAuthor,
-                   int iYear, std::string_view iGenre, double iRating, int iReadCount)
+    constexpr Book(const std::string &iTitle, std::string_view iAuthor, int iYear, std::string_view iGenre,
+                   double iRating, int iReadCount)
         : Book(iTitle, iAuthor, iYear, GenreFromString(iGenre), iRating, iReadCount) {}
 
     auto operator<=>(const Book &rhv) const = default;
@@ -89,10 +88,10 @@ template <>
 struct formatter<bookdb::Book, char> {
     template <typename FormatContext>
     auto format(const bookdb::Book &iBook, FormatContext &fc) const {
-        static const std::string_view fmt("title : {}, Author : {}, year : {}, genre : {}, rating : {}, read_count : {}");
+        constexpr auto fmt("title : {}, Author : {}, year : {}, genre : {}, rating : {}, read_count : {}");
 
-        return format_to(fc.out(), fmt, iBook.title, iBook.author, iBook.year,
-                                        GenreToString(iBook.genre), iBook.rating, iBook.read_count);
+        return format_to(fc.out(), fmt, iBook.title, iBook.author, iBook.year, GenreToString(iBook.genre), iBook.rating,
+                         iBook.read_count);
     }
 
     constexpr auto parse(format_parse_context &ctx) {

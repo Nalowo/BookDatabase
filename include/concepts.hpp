@@ -9,9 +9,13 @@ namespace bookdb {
 using ContainedType = bookdb::Book;
 
 template <typename T>
-concept BookIterator = requires {
-    requires std::same_as<ContainedType, typename T::value_type>;
-    requires std::bidirectional_iterator<T>;
+concept BookIterator = std::same_as<ContainedType, typename T::value_type> && std::bidirectional_iterator<T>;
+
+template <typename Iter>
+concept ConstBookIterator = std::bidirectional_iterator<Iter> && requires(Iter it) {
+    {
+        static_cast<const typename std::iter_value_t<Iter> &>(*it)
+    } -> std::same_as<const typename std::iter_value_t<Iter> &>;
 };
 
 template <typename S, typename I>
@@ -31,7 +35,7 @@ template <typename T>
 concept BookContainerLike = requires(T cont) {
     requires std::same_as<ContainedType, typename T::value_type>;
     requires BookIterator<typename T::iterator>;
-    typename T::const_iterator;
+    requires ConstBookIterator<typename T::const_iterator>;
     typename T::reference;
     typename T::reverse_iterator;
     { cont.begin() } -> std::same_as<typename T::iterator>;
@@ -44,9 +48,19 @@ concept BookContainerLike = requires(T cont) {
     cont.push_back(std::declval<typename T::value_type>());
 };
 
-template<typename C>
+template <typename C>
 concept HasKeyAndMapped = requires {
     typename C::key_container_type;
     typename C::mapped_container_type;
+};
+
+template <typename T, typename U>
+concept EqualityComparable = requires(const T &a, const U &b) {
+    { a == b } -> std::convertible_to<bool>;
+};
+
+template <typename T, typename U>
+concept LessThanComparable = requires(const T &a, const U &b) {
+    { a < b } -> std::convertible_to<bool>;
 };
 }  // namespace bookdb

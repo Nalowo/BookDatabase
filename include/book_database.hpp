@@ -3,8 +3,8 @@
 #include <print>
 #include <string>
 #include <string_view>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 #include "book.hpp"
 #include "concepts.hpp"
@@ -13,8 +13,7 @@
 namespace bookdb {
 
 template <BookContainerLike BookContainer = std::vector<Book>>
-class BookDatabase 
-{
+class BookDatabase {
 public:
     using AuthorContainer = std::unordered_set<std::string, TransparentStringHash, TransparentStringEqual>;
     using iterator = typename BookContainer::iterator;
@@ -24,8 +23,7 @@ public:
     using reference = typename BookContainer::reference;
 
     BookDatabase() = default;
-    BookDatabase(std::initializer_list<value_type> iIList) 
-    {
+    BookDatabase(std::initializer_list<value_type> iIList) {
         books_.reserve(iIList.size());
         std::for_each(iIList.begin(), iIList.end(), [this](Book &&iBook) { PushBack(std::move(iBook)); });
     }
@@ -46,19 +44,16 @@ public:
     const AuthorContainer &GetAuthors() const noexcept { return authors_; }
     const BookContainer &GetBooks() const noexcept { return books_; }
 
-    constexpr void PushBack(const value_type & iElem) 
-    {
+    constexpr void PushBack(const value_type &iElem) {
         books_.push_back(iElem);
         RegAuthor(books_.back());
     }
-    constexpr void PushBack(value_type &&iElem) noexcept(noexcept(books_.push_back(std::move(iElem)))) 
-    {
+    constexpr void PushBack(value_type &&iElem) noexcept(noexcept(books_.push_back(std::move(iElem)))) {
         books_.push_back(std::move(iElem));
         RegAuthor(books_.back());
     }
     template <typename... Args>
-    constexpr reference EmplaceBack(Args &&...iArgs) 
-    {
+    constexpr reference EmplaceBack(Args &&...iArgs) {
         reference ref = books_.emplace_back(std::forward<Args>(iArgs)...);
         RegAuthor(ref);
         return ref;
@@ -69,16 +64,16 @@ public:
     }
 
 private:
-    constexpr bool RegAuthor(value_type& iRef) 
-    {
+    constexpr bool RegAuthor(value_type &iRef) {
         auto [it, trig] = authors_.emplace(iRef.author);
-        if (trig) iRef.author = *it;
+        if (trig)
+            iRef.author = *it;
         return trig;
     }
 
     BookContainer books_;
     AuthorContainer authors_;
-}; // end class BookDatabase
+};  // end class BookDatabase
 }  // namespace bookdb
 
 namespace std {
@@ -86,10 +81,6 @@ template <>
 struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {
     template <typename FormatContext>
     auto format(const bookdb::BookDatabase<std::vector<bookdb::Book>> &db, FormatContext &fc) const {
-        /*
-        Раскомментируйте, когда bookdb::BookDatabase поддержит интерфейсы, доступные стандартным контейнерам
-        (size/begin/...)
-
         format_to(fc.out(), "BookDatabase (size = {}): ", db.size());
 
         format_to(fc.out(), "Books:\n");
@@ -101,7 +92,6 @@ struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {
         for (const auto &author : db.GetAuthors()) {
             format_to(fc.out(), "- {}\n", author);
         }
-        */
         return fc.out();
     }
 
