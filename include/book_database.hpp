@@ -23,9 +23,9 @@ public:
     using reference = typename BookContainer::reference;
 
     BookDatabase() = default;
-    BookDatabase(std::initializer_list<value_type> iIList) {
+    constexpr BookDatabase(std::initializer_list<value_type> iIList) {
         books_.reserve(iIList.size());
-        std::for_each(iIList.begin(), iIList.end(), [this](Book &&iBook) { PushBack(std::move(iBook)); });
+        std::for_each(iIList.begin(), iIList.end(), [this](const Book &iBook) { PushBack(iBook); });
     }
 
     // Standard container interface methods
@@ -66,8 +66,7 @@ public:
 private:
     constexpr bool RegAuthor(value_type &iRef) {
         auto [it, trig] = authors_.emplace(iRef.author);
-        if (trig)
-            iRef.author = *it;
+        iRef.author = *it;
         return trig;
     }
 
